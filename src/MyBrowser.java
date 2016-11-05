@@ -25,8 +25,10 @@ public class MyBrowser {
 	private JTextField textField;
 	private JLabel lbl;
 	private JTextArea textArea;
-	private JButton btn;
+	private JButton btn, btn1;
 	private JScrollPane scroll;
+	private Highlighter mHighlighter;
+	private Highlighter.HighlightPainter mPaint;
 	
 	private String keywordForSearch;
 
@@ -59,8 +61,9 @@ public class MyBrowser {
 	 */
 	private void initialize() {
 		frmMaestrollsWebpageAnalyzer = new JFrame();
+		frmMaestrollsWebpageAnalyzer.setResizable(false);
 		frmMaestrollsWebpageAnalyzer.setTitle("Maestroll's Webpage Analyzer ");
-		frmMaestrollsWebpageAnalyzer.setBounds(100, 100, 827, 552);
+		frmMaestrollsWebpageAnalyzer.setBounds(100, 100, 827, 585);
 		frmMaestrollsWebpageAnalyzer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMaestrollsWebpageAnalyzer.getContentPane().setLayout(null);
 		
@@ -76,13 +79,14 @@ public class MyBrowser {
 		textField.setColumns(10);
 		
 		textArea = new JTextArea();
+		mHighlighter = textArea.getHighlighter();
+		mPaint = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
 		textArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// Detect right click
 				if ((arg0.getModifiers() & InputEvent.BUTTON3_MASK) == InputEvent.BUTTON3_MASK 
-				    && !textArea.getText().toString().isEmpty()
-				    && !textArea.getText().toString().equals("Faulty URL!")){		
+				    && isURLValid()){		
 					    keywordForSearch  = (String)JOptionPane.showInputDialog(
 					    	frmMaestrollsWebpageAnalyzer,
 		                    "Keyword you want to locate in the script:", 
@@ -97,7 +101,8 @@ public class MyBrowser {
 					ArrayList<Integer> position = new WordSearcher().
 							getFoundWordPosition(textArea.getText().toString(), keywordForSearch);
 					
-					highlightWords(position, keywordForSearch.length());
+					highlightWords(position, keywordForSearch.length(),
+							textArea.getText().toString().length());
 				} else{
 					// Do nothing
 				}
@@ -119,15 +124,36 @@ public class MyBrowser {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				textArea.setText(new HttpExtractor().getLinkInfo(textField.getText().toString()));
+				if (isURLValid()) 
+					btn1.setEnabled(true);
+				else
+					btn1.setEnabled(false);
 			}
 		});
 		btn.setBounds(592, 94, 123, 29);
 		frmMaestrollsWebpageAnalyzer.getContentPane().add(btn);
+		
+		btn1 = new JButton("Extract!");
+		btn1.setEnabled(false);
+		btn1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				frmMaestrollsWebpageAnalyzer.setVisible(false);
+				String[] passingData = new String[2];
+				passingData[0] = textArea.getText().toString(); 
+				passingData[1] = textField.getText().toString();
+				
+			    ExtractingPage.main(passingData);
+			}
+		});
+		btn1.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btn1.setBounds(98, 480, 123, 29);
+		frmMaestrollsWebpageAnalyzer.getContentPane().add(btn1);
 	}
 	
-	private void highlightWords(ArrayList<Integer> position, int keywordLength){
-		Highlighter mHighlighter = textArea.getHighlighter();
-		Highlighter.HighlightPainter mPaint = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+	private void highlightWords(ArrayList<Integer> position, int keywordLength, int length){
+		textArea.getHighlighter().removeAllHighlights();
+		textArea.setHighlighter(mHighlighter);
 		
 		for (int i = 0; i < position.size(); i++){
 			try {
@@ -137,5 +163,10 @@ public class MyBrowser {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private boolean isURLValid(){
+		return !textArea.getText().toString().isEmpty() && 
+			   !textArea.getText().toString().equals("Faulty URL!");
 	}
 }

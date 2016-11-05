@@ -15,7 +15,7 @@ public class HttpExtractor {
         	mHttpUrlConnection.setRequestMethod("GET");
             
             // Deceive the server with this when you face to a 403 error.
-            mHttpUrlConnection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+            mHttpUrlConnection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
             
             mHttpUrlConnection.connect();
 
