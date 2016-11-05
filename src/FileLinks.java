@@ -33,7 +33,10 @@ public class FileLinks {
 	    
 		String url = mScript[0].substring(head + 1, tail + 1);
 		if (url.indexOf("http") == -1){
-			url = root + url;
+			if (url.indexOf("//") == -1)
+				url = root + url;
+			else
+				url = "https:" + url;
 		}
 		
 		return url;
