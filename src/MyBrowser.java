@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -7,12 +8,16 @@ import javax.swing.JScrollPane;
 
 import java.awt.Font;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class MyBrowser {
 
@@ -89,7 +94,12 @@ public class MyBrowser {
 				}
 				
 				if (!keywordForSearch.isEmpty()){
-					// Need more!
+					ArrayList<Integer> position = new WordSearcher().
+							getFoundWordPosition(textArea.getText().toString(), keywordForSearch);
+					
+					highlightWords(position, keywordForSearch.length());
+				} else{
+					// Do nothing
 				}
 			}
 		});
@@ -113,5 +123,19 @@ public class MyBrowser {
 		});
 		btn.setBounds(592, 94, 123, 29);
 		frmMaestrollsWebpageAnalyzer.getContentPane().add(btn);
+	}
+	
+	private void highlightWords(ArrayList<Integer> position, int keywordLength){
+		Highlighter mHighlighter = textArea.getHighlighter();
+		Highlighter.HighlightPainter mPaint = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+		
+		for (int i = 0; i < position.size(); i++){
+			try {
+				mHighlighter.addHighlight(position.get(i).intValue(),
+						position.get(i).intValue() + keywordLength, mPaint);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
