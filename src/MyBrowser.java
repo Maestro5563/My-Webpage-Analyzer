@@ -17,6 +17,8 @@ import javax.swing.JTextArea;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class MyBrowser {
@@ -25,7 +27,7 @@ public class MyBrowser {
 	private JTextField textField;
 	private JLabel lbl;
 	private JTextArea textArea;
-	private JButton btn, btn1;
+	private JButton btn, btn1, btndev;
 	private JScrollPane scroll;
 	private Highlighter mHighlighter;
 	private Highlighter.HighlightPainter mPaint;
@@ -149,6 +151,22 @@ public class MyBrowser {
 		btn1.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		btn1.setBounds(98, 480, 123, 29);
 		frmMaestrollsWebpageAnalyzer.getContentPane().add(btn1);
+		
+		btndev = new JButton("Save Scipt");
+		btndev.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					PrintWriter handout = new PrintWriter("filename.txt");
+					handout.println(textArea.getText().toString());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		btndev.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btndev.setBounds(228, 479, 123, 29);
+		frmMaestrollsWebpageAnalyzer.getContentPane().add(btndev);
 	}
 	
 	private void highlightWords(ArrayList<Integer> position, int keywordLength, int length){
